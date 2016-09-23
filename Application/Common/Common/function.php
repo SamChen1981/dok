@@ -29,6 +29,7 @@ require_once(APP_PATH . '/Common/Common/limit.php');
 require_once(APP_PATH . '/Common/Common/role.php');
 require_once(APP_PATH . '/Common/Common/ext_parse.php');
 require_once(APP_PATH . '/Common/Common/collect.php');
+require_once(APP_PATH . '/Common/Common/weixin.php');
 /*require_once(APP_PATH . '/Common/Common/extend.php');*/
 
 
