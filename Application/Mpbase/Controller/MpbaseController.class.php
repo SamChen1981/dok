@@ -80,6 +80,7 @@ class MpbaseController extends AdminController
     {
         $model = D('Mpbase/MemberPublic');
         if (IS_POST) {//表单提交处理
+            echo "测试";
             $data['uid'] = I('post.uid', '', 'op_t');
             $data['public_name'] = I('post.public_name', '', 'op_t');
             $data['wechat'] = I('post.wechat', 1, 'op_t');
