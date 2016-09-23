@@ -50,11 +50,10 @@ class MpbaseController extends AdminController
             $map['uid'] = UID;
         }
         $list = $model->where($map)->page($page, $r)->order('id desc')->select();
-        dump($list);
         int_to_string($list);//设置status为中文状态
         foreach ($list as &$val) {
             $val['u_name'] = D('Common/Member')->where('uid=' . $val['uid'])->getField('nickname');
-            $val['type'] = $model->getMpType($val['type']);
+            $val['type'] = $model->getMpType($val['mp_type']);
         }
         $totalCount = $model->count();
         //显示页面
@@ -80,7 +79,6 @@ class MpbaseController extends AdminController
     {
         $model = D('Mpbase/MemberPublic');
         if (IS_POST) {//表单提交处理
-            echo "测试";
             $data['uid'] = I('post.uid', '', 'op_t');
             $data['public_name'] = I('post.public_name', '', 'op_t');
             $data['wechat'] = I('post.wechat', 1, 'op_t');
