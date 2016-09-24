@@ -139,5 +139,68 @@ class MpbaseController extends AdminController
         }
 
     }
+    /*
+     * 删除公众号
+     * @param int  null  $ids
+     */
+    public function del($ids=null){
+        if(!$ids){
+            $this->error('请选择公众号...');
+        }
+        $model=D('Mpbase/MemberPublic');
+        $res=$model->delete($ids);
+        if($res){
+            $this->success('删除成功...');
+        }else{
+            $this->error('删除失败...');
+        }
+    }
+    /*切换公众号*/
+    public function change(){
+        $map['id']=I('id',0,'intval');
+        $info=D('Mpbase/MemberPublic')->where($map)->find();
+        get_mpid($info['mp_id']);
+        unset($map);
+        $map['uid']=UID;
+        $res=M('Member')->where($map)->setField('token',$info['public_id']);
+        $user=session('user_auth');
+        $user['token']=$info['public_id'];
+        $user['mp_id']=$info['mp_id'];
+        $user['public_name']=$info['public_name'];
+        session('user_auth',$user);
+        session('user_auth_sign',data_auth_sign($user));
+        $this->success('切换公众号成功！');
+        redirect(U('index'));
+    }
+    /*
+    * 自动回复消息
+    * --关注自动回复
+    * --关键词自动回复
+    * --未匹配关键字的回复
+    * */
+    public function replay_messages($r=10,$page=1){
+        $autor=D('Mpbase/Autoreply');
+        $messages=D('Mpbase/Messages');
+        I('mtype')?$where['mtype']=I('mtype'):null;
+        $where['mp_id']=get_mpid();
+        $list=$messages->get_replay_all($where);
+        $message_type=$autor->getMessagesType();
+        $reply_type=$autor->replyMessagesType();
+        $builder=new AdminListBuilder();
+        $mtype['mtype']=I('mtype');
+        $builder->title('自动回复消息')
+            ->buttonNew(U('edit_text_messages',$mtype),'新增文本消息')
+            ->buttonNew(U('edit_picture_messages',$mtype),'新增图文消息')
+            ->setSelectPostUrl(U(''))
+            ->select('动作类型','mtype','select','','','',$message_type)
+            ->keyId()->keyText('mtype','动作类型')->keyText('type','回复类型')->keyText('title','规则名称')
+            ->keyTime('time','创建时间')
+            //转出想要的操作key 为do;
+            ->keyTruncText('detile','详情',15)
+            ->keyDoAction('editaction','操作')
+            ->keyHtml('statu','操作')->keyHtml('editaction','操作')->data($list['data'])
+            ->pagination($list['count'],$r)
+            ->display();
+    }
 
 }

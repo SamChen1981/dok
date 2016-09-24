@@ -17,7 +17,7 @@ use Think\Model;
  * 自动回复模型AutoReplyModel
  * @package Mpbase\model
  * */
-class AutoReplyModel extends Model
+class AutoreplyModel extends Model
 {
     public function __construct($name,$tablePrefix,$connection)
     {

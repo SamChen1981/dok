@@ -42,3 +42,19 @@ function get_mpid($mp_id=null){
     }
     return $mp_id;
 }
+//获取当前用户的token
+function get_token($token=NULL){
+    if($token !==NULL){
+        session('token',$token);
+    }elseif(!empty($_REQUEST['token'])){
+        session('token',$_REQUEST['token']);
+    }
+    $token=session('token');
+    if(empty($token)){
+        $token=session('user_auto.token');
+    }
+    if(empty($token)){
+        return -1;
+    }
+    return $token;
+}
