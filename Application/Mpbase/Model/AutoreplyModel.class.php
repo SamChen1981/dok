@@ -50,6 +50,44 @@ class AutoreplyModel extends Model
         );
         return $array;
     }
+    /*判断类型选择数据库*/
+    public function post_messages($data){
+        switch ($data['type']){
+            case 'picture':
+                $picturemodel=M('picture_messages');
+                !$data['ms_id']?
+                    $res=$picturemodel->field('title0,detile0,url0,title1,detile1,url1,title2,detile2,url2,title3,
+                    detile3,url3,title4,detile4,url4,pic')->add($data):
+                    $res=$picturemodel->field('title0,detile0,url0,title1,detile1,url1,title2,detile2,url2,title3,
+                    detile3,url3,title4,detile4,url4,pic')->save($data);
+                break;
+            case 'text':
+                $textmodel=M('text_messages');
+                !$data['ms_id']?
+                    $res=$textmodel->field('detile')->add($data):
+                    $res=$textmodel->field('id,detile')->save($data);
+                break;
+            default:
+                return false;
+        }
+        return $res;
+    }
+    public function get_mes_data($data){
+        $res_data=$this->get_type_data($data);
+        return array_merge($res_data,$data);
+    }
+    public function get_type_data($data){
+        $id=$data['ms_id'];
+        switch($data['type']){
+            case 'picture':
+                $model=M('picture_messages');
+                break;
+            case 'text':
+                $model=M('text_messages');
+                break;
+        }
+        return $model->find($id);
+    }
 
 
 }

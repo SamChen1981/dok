@@ -202,5 +202,46 @@ class MpbaseController extends AdminController
             ->pagination($list['count'],$r)
             ->display();
     }
+    public function edit_text_messages(){
+        $auto=D('Mpbase/Autoreply');
+        $model=D('Mpbase/Replay_messages');
+        $id=I('id');
+        $list['mtype']=I('mtype');
+        $mtype=$auto->getArType();
+        if(IS_POST){
+            $data=I('post.');
+            $data['type']='text';
+            $data['mp_id']=get_mpid();
+            $data['time']=time();
+            //开始事务
+            $model->startTrans();
+            $res_mes=$auto->post_messages($data);
+            $data['ms_id']=$res_mes;
+            if(!$id){//不存在ID，则为新增
+                $res=$model->field('id,title,statu,time,type,mp_id,mtype,ms_id,keywork')->add($data);
+            }else{//存在id，则为更新
+                $res=$model->field('id,title,statu,time,type,mp_id,mtype,ms_id',keywork)->save($data);
+            }
+            if(!$res || !res_mes){
+                $model->rollback();
+                $this->error($res_mes.'错误-'.$res);
+            }else{
+                $model->commit();
+                $this->success('成功',"javascript:history.back(-1);");
+            }
+
+        }else{
+            if($id){//更新表单
+                $list=$model->find($id);
+                $list=$auto->get_mes_data($list);
+            }
+            $builder=new AdminConfigBuilder();
+            $builder->title('文本')->keyId()->keyText('title','规则名称')->keyRadio('mtype','动作类型','',$mtype)
+                ->keyText('keywork','关键字','匹配多个关键字请以 ，号隔开')
+                ->keyTextArea('detile','内容')
+                ->data($list)->buttonSubmit(U(''))
+                ->buttonBack()->display();
+        }
+    }
 
 }
